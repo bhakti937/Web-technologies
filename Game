@@ -1,0 +1,131 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Memory Card Game</title>
+
+<style>
+body {
+    text-align: center;
+    font-family: Arial;
+    background: #172235;
+    color: white;
+}
+
+h1 {
+    color: #00d9ff;
+}
+
+.game {
+    display: grid;
+    grid-template-columns: repeat(4, 80px);
+    gap: 10px;
+    justify-content: center;
+    margin: 30px;
+}
+
+.card {
+    width: 80px;
+    height: 80px;
+    background: #00d9ff;
+    color: white;
+    font-size: 30px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+button {
+    padding: 10px 20px;
+    background: #00d9ff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🧠 Memory Card Game</h1>
+<p>Find the matching pairs!</p>
+
+<div class="game" id="game"></div>
+
+<button onclick="startGame()">Restart Game</button>
+<p id="result"></p>
+
+<script>
+let emojis = ["🍎","🍌","🍇","🍒",
+              "🍎","🍌","🍇","🍒"];
+
+let first = null;
+let second = null;
+let lock = false;
+let matches = 0;
+
+function startGame() {
+    let game = document.getElementById("game");
+    game.innerHTML = "";
+    matches = 0;
+    first = null;
+    second = null;
+    lock = false;
+
+    document.getElementById("result").innerText = "";
+
+    emojis.sort(() => Math.random() - 0.5);
+
+    emojis.forEach(emoji => {
+        let card = document.createElement("div");
+        card.className = "card";
+        card.dataset.value = emoji;
+        card.innerText = "?";
+
+        card.onclick = () => flip(card);
+        game.appendChild(card);
+    });
+}
+
+function flip(card) {
+    if (lock || card === first ||
+        card.innerText !== "?") return;
+
+    card.innerText = card.dataset.value;
+
+    if (!first) {
+        first = card;
+    } else {
+        second = card;
+        lock = true;
+
+        if (first.dataset.value === second.dataset.value) {
+            matches++;
+            first = null;
+            second = null;
+            lock = false;
+
+            if (matches === 4) {
+                document.getElementById("result")
+                .innerText = "🎉 Congratulations! You Won!";
+            }
+        } else {
+            setTimeout(() => {
+                first.innerText = "?";
+                second.innerText = "?";
+                first = null;
+                second = null;
+                lock = false;
+            }, 800);
+        }
+    }
+}
+
+startGame();
+</script>
+
+</body>
+</html>
